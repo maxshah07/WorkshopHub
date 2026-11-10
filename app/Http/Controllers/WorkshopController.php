@@ -19,9 +19,30 @@ class WorkshopController extends Controller
         ]);
     }
 
-    public function index() {
-        $workshops = Workshop::with('category')->get();
-        return view('workshops.index', compact('workshops'));
+    public function index(Request $request) {
+        $validated = $request->validate([
+            'search' => 'nullable|string|max:100',
+            'category_id' => 'nullable|integer|exists:categories,id',
+        ]);
+
+        $search = $validated['search'] ?? null;
+        $categoryId = $validated['category_id'] ?? null;
+
+        $workshops = Workshop::query()->with('category')
+            ->when($search, function($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%");
+            })
+            ->when($categoryId, function($query) use ($categoryId) {
+                $query->where('category_id', $categoryId);
+            })
+            ->orderBy('starts_at')
+            ->orderBy('title')
+            ->paginate(6)
+            ->withQueryString();
+
+        $categories = Category::orderBy('name')->get();
+
+        return view('workshops.index', compact('workshops', 'categories'));
     }
 
     public function show(Workshop $workshop) {

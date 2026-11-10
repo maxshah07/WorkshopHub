@@ -1,1 +1,11 @@
+@extends('layouts.app')
 
+@section('title', "Edit {$workshop->id} | {$workshop->name} - WorkshopHub")
+
+@section('content')
+    <div class="text-4xl mb-6 h-16">Edit Workshop</div>
+
+    <div class="flex justify-center items-center w-full">
+        @include('workshops._form')
+    </div>
+@endsection

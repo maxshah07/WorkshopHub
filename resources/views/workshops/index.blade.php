@@ -10,6 +10,41 @@
             Create Workshop +
         </a>
 
+        <form action="{{ route('workshops.index') }}" method="GET"
+            class="flex gap-4 mb-8">
+
+            {{-- Search --}}
+            <input
+                type="text"
+                name="search"
+                placeholder="Search workshops..."
+                value="{{ request('search') }}"
+                class="border rounded-lg p-3"
+            >
+
+            {{-- Category filter --}}
+            <select name="category_id" class="border rounded-lg p-3">
+                <option value="">All categories</option>
+
+                @foreach ($categories as $category)
+                    <option
+                        value="{{ $category->id }}"
+                        @selected(request('category_id') == $category->id)
+                    >
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            <button type="submit" class="bg-secondary text-white p-3 rounded-lg">
+                Filter
+            </button>
+
+            <a href="{{ route('workshops.index') }}" class="p-3">
+                Clear
+            </a>
+        </form>
+
         @forelse ($workshops as $workshop)
             <a href="{{ route('workshops.show', $workshop) }}">
                 <div class="w-full h-32 shadow rounded-3xl p-6 flex">
@@ -25,5 +60,10 @@
         @empty
             <div>No workshops.</div>
         @endforelse
+
+
+        <div class="mt-8">
+            {{ $workshops->links() }}
+        </div>
     </div>
 @endsection
